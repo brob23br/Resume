@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS DVA-C02 Lab Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">
+                <span class="aws-icon">☁️</span>
+                AWS DVA-C02 Lab Tracker
+            </h1>
+            <p class="header-subtitle">Interactive hands-on labs for AWS Certified Developer - Associate</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Progress Overview Section -->
+            <section class="progress-section">
+                <div class="progress-card">
+                    <h2>Your Progress</h2>
+                    <div class="progress-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="completedLabs">0</span>
+                            <span class="stat-label">Completed Labs</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="totalLabs">15</span>
+                            <span class="stat-label">Total Labs</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="progressPercent">0%</span>
+                            <span class="stat-label">Progress</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                </div>
+
+                <!-- Domain Coverage -->
+                <div class="domain-coverage">
+                    <h3>Domain Coverage</h3>
+                    <div class="domains-grid">
+                        <div class="domain-card" data-domain="development">
+                            <h4>Development (32%)</h4>
+                            <div class="domain-progress">
+                                <div class="domain-progress-bar">
+                                    <div class="domain-progress-fill" id="developmentProgress"></div>
+                                </div>
+                                <span class="domain-count" id="developmentCount">0/6</span>
+                            </div>
+                        </div>
+                        <div class="domain-card" data-domain="security">
+                            <h4>Security (26%)</h4>
+                            <div class="domain-progress">
+                                <div class="domain-progress-bar">
+                                    <div class="domain-progress-fill" id="securityProgress"></div>
+                                </div>
+                                <span class="domain-count" id="securityCount">0/3</span>
+                            </div>
+                        </div>
+                        <div class="domain-card" data-domain="deployment">
+                            <h4>Deployment (24%)</h4>
+                            <div class="domain-progress">
+                                <div class="domain-progress-bar">
+                                    <div class="domain-progress-fill" id="deploymentProgress"></div>
+                                </div>
+                                <span class="domain-count" id="deploymentCount">0/4</span>
+                            </div>
+                        </div>
+                        <div class="domain-card" data-domain="troubleshooting">
+                            <h4>Troubleshooting (18%)</h4>
+                            <div class="domain-progress">
+                                <div class="domain-progress-bar">
+                                    <div class="domain-progress-fill" id="troubleshootingProgress"></div>
+                                </div>
+                                <span class="domain-count" id="troubleshootingCount">0/2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="domainFilter">Filter by Domain:</label>
+                        <select id="domainFilter" class="filter-select">
+                            <option value="">All Domains</option>
+                            <option value="development">Development (32%)</option>
+                            <option value="security">Security (26%)</option>
+                            <option value="deployment">Deployment (24%)</option>
+                            <option value="troubleshooting">Troubleshooting (18%)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="serviceFilter">Filter by Service:</label>
+                        <select id="serviceFilter" class="filter-select">
+                            <option value="">All Services</option>
+                            <option value="lambda">Lambda ⭐</option>
+                            <option value="dynamodb">DynamoDB</option>
+                            <option value="api-gateway">API Gateway</option>
+                            <option value="s3">S3</option>
+                            <option value="cognito">Cognito</option>
+                            <option value="iam">IAM</option>
+                            <option value="cloudformation">CloudFormation</option>
+                            <option value="cloudwatch">CloudWatch</option>
+                            <option value="x-ray">X-Ray</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Filter by Status:</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">All Labs</option>
+                            <option value="completed">Completed</option>
+                            <option value="not-started">Not Started</option>
+                        </select>
+                    </div>
+                    <button id="resetFilters" class="reset-btn">Reset Filters</button>
+                </div>
+            </section>
+
+            <!-- Labs Section -->
+            <section class="labs-section">
+                <div class="section-header">
+                    <h2>AWS DVA-C02 Hands-on Labs</h2>
+                    <div class="view-toggle">
+                        <button id="gridView" class="view-btn active">Grid View</button>
+                        <button id="listView" class="view-btn">List View</button>
+                    </div>
+                </div>
+                <div id="labsContainer" class="labs-grid">
+                    <!-- Labs will be dynamically loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Lab Details Modal -->
+    <div id="labModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <div id="modalContent">
+                <!-- Lab details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cost Alert Toast -->
+    <div id="costAlert" class="toast toast-warning">
+        <div class="toast-content">
+            <strong>⚠️ Cost Alert:</strong> <span id="costAlertMessage"></span>
+        </div>
+        <button class="toast-close" id="closeCostAlert">&times;</button>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 AWS DVA-C02 Lab Tracker | Built for exam preparation | 
+            <a href="https://aws.amazon.com/certification/certified-developer-associate/" target="_blank">Official AWS DVA-C02 Info</a></p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
