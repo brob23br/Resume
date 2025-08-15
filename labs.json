@@ -1,11 +1,13 @@
-
 [
   {
     "id": "lab-001",
     "week": 1,
     "title": "Lambda Fundamentals & Event Sources",
     "domain": "development",
-    "services": ["lambda", "cloudwatch"],
+    "services": [
+      "lambda",
+      "cloudwatch"
+    ],
     "difficulty": "Beginner",
     "estimatedTime": "2-3 hours",
     "description": "Master AWS Lambda fundamentals with event-driven architecture patterns. Create functions, configure triggers, and monitor execution.",
@@ -103,14 +105,22 @@
         "title": "Lambda Best Practices",
         "url": "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
       }
-    ]
+    ],
+    "whitepaper": {
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/",
+      "title": "AWS Lambda Developer Guide"
+    }
   },
   {
     "id": "lab-002",
     "week": 2,
     "title": "DynamoDB with Lambda Integration",
     "domain": "development",
-    "services": ["lambda", "dynamodb", "iam"],
+    "services": [
+      "lambda",
+      "dynamodb",
+      "iam"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "3-4 hours",
     "description": "Build a serverless data processing pipeline with DynamoDB streams and Lambda triggers. Learn NoSQL data modeling and optimization strategies.",
@@ -178,7 +188,7 @@
       },
       {
         "description": "Create a Global Secondary Index (GSI) on the 'email' attribute.",
-  "command": "aws dynamodb update-table --table-name UserProfiles --attribute-definitions AttributeName=email,AttributeType=S --global-secondary-index-updates '[{\"Create\":{\"IndexName\":\"email-index\",\"KeySchema\":[{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}],\"Projection\":{\"ProjectionType\":\"ALL\"},\"ProvisionedThroughput\":{\"ReadCapacityUnits\":5,\"WriteCapacityUnits\":5}}}]'"
+        "command": "aws dynamodb update-table --table-name UserProfiles --attribute-definitions AttributeName=email,AttributeType=S --global-secondary-index-updates '[{\"Create\":{\"IndexName\":\"email-index\",\"KeySchema\":[{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}],\"Projection\":{\"ProjectionType\":\"ALL\"},\"ProvisionedThroughput\":{\"ReadCapacityUnits\":5,\"WriteCapacityUnits\":5}}}]'"
       },
       {
         "description": "Query the GSI for a specific email address.",
@@ -208,14 +218,22 @@
         "title": "Best Practices for DynamoDB",
         "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html"
       }
-    ]
+    ],
+    "whitepaper": {
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/",
+      "title": "DynamoDB Developer Guide"
+    }
   },
   {
     "id": "lab-003",
     "week": 3,
     "title": "API Gateway + Lambda REST API",
     "domain": "development",
-    "services": ["api-gateway", "lambda", "iam"],
+    "services": [
+      "api-gateway",
+      "lambda",
+      "iam"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "3-4 hours",
     "description": "Build a complete serverless REST API with API Gateway and Lambda. Implement authentication, request validation, and error handling.",
@@ -309,14 +327,22 @@
         "title": "API Gateway CORS",
         "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html"
       }
-    ]
+    ],
+    "whitepaper": {
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/",
+      "title": "API Gateway Developer Guide"
+    }
   },
   {
     "id": "lab-004",
     "week": 4,
     "title": "S3 Event Processing with Lambda",
     "domain": "development",
-    "services": ["s3", "lambda", "sns"],
+    "services": [
+      "s3",
+      "lambda",
+      "sns"
+    ],
     "difficulty": "Beginner",
     "estimatedTime": "2-3 hours",
     "description": "Process S3 object events with Lambda functions. Implement image resizing, file validation, and notification workflows.",
@@ -414,14 +440,22 @@
         "title": "S3 Developer Guide",
         "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/"
       }
-    ]
+    ],
+    "whitepaper": {
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/NotificationHowTo.html",
+      "title": "S3 Event Notifications"
+    }
   },
   {
     "id": "lab-005",
     "week": 5,
     "title": "Cognito Authentication & Authorization",
     "domain": "security",
-    "services": ["cognito", "api-gateway", "lambda"],
+    "services": [
+      "cognito",
+      "api-gateway",
+      "lambda"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "4-5 hours",
     "description": "Implement comprehensive user authentication with Cognito User Pools and Identity Pools. Secure API access with JWT tokens.",
@@ -517,7 +551,11 @@
     "week": 6,
     "title": "IAM Roles & Policies for Developers",
     "domain": "security",
-    "services": ["iam", "lambda", "s3"],
+    "services": [
+      "iam",
+      "lambda",
+      "s3"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "3-4 hours",
     "description": "Master IAM security best practices for application development. Implement least privilege access and cross-service permissions.",
@@ -608,7 +646,11 @@
     "week": 7,
     "title": "Secrets Manager & Parameter Store",
     "domain": "security",
-    "services": ["secrets-manager", "parameter-store", "lambda"],
+    "services": [
+      "secrets-manager",
+      "parameter-store",
+      "lambda"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "2-3 hours",
     "description": "Secure application configuration and secrets management using AWS Secrets Manager and Systems Manager Parameter Store.",
@@ -695,7 +737,11 @@
     "week": 8,
     "title": "CloudFormation & SAM Deployment",
     "domain": "deployment",
-    "services": ["cloudformation", "sam", "lambda"],
+    "services": [
+      "cloudformation",
+      "sam",
+      "lambda"
+    ],
     "difficulty": "Advanced",
     "estimatedTime": "4-5 hours",
     "description": "Infrastructure as Code with CloudFormation and AWS SAM. Deploy serverless applications with proper resource management and rollback capabilities.",
@@ -781,7 +827,12 @@
     "week": 9,
     "title": "CI/CD with CodePipeline & Lambda",
     "domain": "deployment",
-    "services": ["codepipeline", "codebuild", "codedeploy", "lambda"],
+    "services": [
+      "codepipeline",
+      "codebuild",
+      "codedeploy",
+      "lambda"
+    ],
     "difficulty": "Advanced",
     "estimatedTime": "4-5 hours",
     "description": "Build complete CI/CD pipeline for serverless applications with automated testing, deployment, and rollback capabilities.",
@@ -867,7 +918,11 @@
     "week": 10,
     "title": "Elastic Beanstalk Application Deployment",
     "domain": "deployment",
-    "services": ["elastic-beanstalk", "ec2", "cloudwatch"],
+    "services": [
+      "elastic-beanstalk",
+      "ec2",
+      "cloudwatch"
+    ],
     "difficulty": "Beginner",
     "estimatedTime": "2-3 hours",
     "description": "Deploy and manage web applications with Elastic Beanstalk. Learn application versioning, environment management, and auto-scaling.",
@@ -953,7 +1008,11 @@
     "week": 11,
     "title": "CloudWatch Monitoring & Custom Metrics",
     "domain": "troubleshooting",
-    "services": ["cloudwatch", "lambda", "sns"],
+    "services": [
+      "cloudwatch",
+      "lambda",
+      "sns"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "3-4 hours",
     "description": "Implement comprehensive monitoring with CloudWatch metrics, alarms, and dashboards. Create custom metrics and automated alerting.",
@@ -1034,7 +1093,11 @@
     "week": 12,
     "title": "X-Ray Distributed Tracing",
     "domain": "troubleshooting",
-    "services": ["x-ray", "lambda", "api-gateway"],
+    "services": [
+      "x-ray",
+      "lambda",
+      "api-gateway"
+    ],
     "difficulty": "Advanced",
     "estimatedTime": "3-4 hours",
     "description": "Implement distributed tracing with AWS X-Ray. Trace requests across multiple services and analyze performance bottlenecks.",
@@ -1114,7 +1177,11 @@
     "week": 13,
     "title": "SQS/SNS Messaging Patterns",
     "domain": "development",
-    "services": ["sqs", "sns", "lambda"],
+    "services": [
+      "sqs",
+      "sns",
+      "lambda"
+    ],
     "difficulty": "Intermediate",
     "estimatedTime": "3-4 hours",
     "description": "Implement decoupled messaging patterns with SQS and SNS. Build fan-out, queuing, and dead letter queue scenarios.",
@@ -1199,7 +1266,11 @@
     "week": 14,
     "title": "ECS Container Deployment",
     "domain": "deployment",
-    "services": ["ecs", "ecr", "cloudwatch"],
+    "services": [
+      "ecs",
+      "ecr",
+      "cloudwatch"
+    ],
     "difficulty": "Advanced",
     "estimatedTime": "4-5 hours",
     "description": "Deploy containerized applications with Amazon ECS. Learn container orchestration, service discovery, and auto-scaling.",
@@ -1289,7 +1360,11 @@
     "week": 15,
     "title": "Performance Optimization & Cost Analysis",
     "domain": "troubleshooting",
-    "services": ["lambda", "cloudwatch", "x-ray"],
+    "services": [
+      "lambda",
+      "cloudwatch",
+      "x-ray"
+    ],
     "difficulty": "Advanced",
     "estimatedTime": "3-4 hours",
     "description": "Comprehensive performance optimization across AWS services. Analyze costs, optimize resource usage, and implement monitoring best practices.",

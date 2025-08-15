@@ -9,8 +9,53 @@ class LabTracker {
             service: '',
             status: ''
         };
+        // Mapping from service/domain to a relevant AWS whitepaper
+        this.whitepaperMap = {
+            lambda: { title: 'AWS Lambda Best Practices', url: 'https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html' },
+            dynamodb: { title: 'Amazon DynamoDB Best Practices', url: 'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html' },
+            'api-gateway': { title: 'Amazon API Gateway Developer Guide', url: 'https://docs.aws.amazon.com/apigateway/latest/developerguide/' },
+            s3: { title: 'Amazon S3 Best Practices', url: 'https://aws.amazon.com/whitepapers/' },
+            iam: { title: 'AWS Security Best Practices', url: 'https://d1.awsstatic.com/whitepapers/Security/AWS_Security_Best_Practices.pdf' },
+            cloudwatch: { title: 'Monitoring and Observability', url: 'https://aws.amazon.com/whitepapers/' },
+            development: { title: 'AWS Developer Best Practices', url: 'https://aws.amazon.com/whitepapers/' },
+            security: { title: 'AWS Security Best Practices', url: 'https://d1.awsstatic.com/whitepapers/Security/AWS_Security_Best_Practices.pdf' },
+            deployment: { title: 'Architecting for the Cloud: Best Practices', url: 'https://d1.awsstatic.com/whitepapers/AWS_Cloud_Best_Practices.pdf' },
+            troubleshooting: { title: 'AWS Operational Best Practices', url: 'https://aws.amazon.com/whitepapers/' },
+            default: { title: 'AWS Whitepapers', url: 'https://aws.amazon.com/whitepapers/' }
+        };
         
         this.init();
+    }
+
+    // Return the most relevant whitepaper for a lab (checks services first, then domain)
+    getWhitepaperForLab(lab) {
+        if (!lab) return this.whitepaperMap.default;
+
+        // If a lab explicitly specifies a whitepaper, prefer it
+        if (lab.whitepaper && lab.whitepaper.url) return lab.whitepaper;
+
+        // prefer service-specific whitepapers
+        for (const svc of lab.services || []) {
+            if (this.whitepaperMap[svc]) return this.whitepaperMap[svc];
+        }
+
+        // then domain-level
+        if (lab.domain && this.whitepaperMap[lab.domain]) return this.whitepaperMap[lab.domain];
+
+        return this.whitepaperMap.default;
+    }
+
+    // Return the best documentation link for a lab: prefer lab.documentation[0], then lab.whitepaper, then mapped whitepapers
+    getDocsForLab(lab) {
+        if (!lab) return this.whitepaperMap.default;
+
+        if (lab.documentation && lab.documentation.length > 0 && lab.documentation[0].url) {
+            return { title: lab.documentation[0].title || 'AWS Docs', url: lab.documentation[0].url };
+        }
+
+        if (lab.whitepaper && lab.whitepaper.url) return lab.whitepaper;
+
+        return this.getWhitepaperForLab(lab);
     }
 
     async init() {
@@ -25,6 +70,18 @@ class LabTracker {
         try {
             const response = await fetch('labs.json');
             this.labs = await response.json();
+            // Ensure every lab has a whitepaper entry at runtime so AWS Docs button works for all labs
+            this.labs = this.labs.map(lab => {
+                try {
+                    if (!lab.whitepaper || !lab.whitepaper.url) {
+                        lab.whitepaper = this.getWhitepaperForLab(lab);
+                    }
+                } catch (e) {
+                    // defensive: fallback to default whitepaper
+                    lab.whitepaper = this.whitepaperMap.default;
+                }
+                return lab;
+            });
         } catch (error) {
             console.error('Failed to load labs:', error);
             this.labs = [];
@@ -177,19 +234,31 @@ class LabTracker {
         filteredLabs.forEach(lab => {
             const statusButton = document.getElementById(`status-${lab.id}`);
             const detailsButton = document.getElementById(`details-${lab.id}`);
-            
+            const awsDocsButton = document.getElementById(`awsdocs-${lab.id}`);
+
             if (statusButton) {
                 statusButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.toggleLabCompletion(lab.id);
                 });
             }
-            
+
             if (detailsButton) {
                 detailsButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.showLabDetails(lab);
                 });
+            }
+
+            // Open preferred docs link (documentation[0] preferred) when AWS Docs button is clicked
+            if (awsDocsButton) {
+                const doc = this.getDocsForLab(lab);
+                if (doc && doc.url) {
+                    awsDocsButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.open(doc.url, '_blank', 'noopener');
+                    });
+                }
             }
         });
     }
@@ -197,14 +266,19 @@ class LabTracker {
     createLabCard(lab) {
         const isCompleted = this.completedLabs.includes(lab.id);
         const isLambdaFocus = lab.services.includes('lambda');
-        
+        // Determine most relevant docs link for this lab (prefer documentation[0])
+        const docs = this.getDocsForLab(lab);
+        const awsDocsBtn = docs && docs.url
+            ? `<button class="btn btn-secondary" id="awsdocs-${lab.id}" type="button" title="${docs.title}">📚 AWS Docs</button>`
+            : `<button class="btn btn-secondary" type="button" disabled title="No AWS Docs available">📚 AWS Docs</button>`;
+
         return `
-            <div class="lab-card ${isCompleted ? 'completed' : ''} ${isLambdaFocus ? 'lambda-focus' : ''}" 
+            <div class="lab-card ${isCompleted ? 'completed' : ''} ${isLambdaFocus ? 'lambda-focus' : ''} domain-${lab.domain}" 
                  data-lab-id="${lab.id}">
                 <div class="lab-header">
                     <div>
                         <h3 class="lab-title">${lab.title}</h3>
-                        <span class="lab-domain">${this.getDomainLabel(lab.domain)}</span>
+                        <span class="lab-domain ${lab.domain}">${this.getDomainLabel(lab.domain)}</span>
                     </div>
                     <div class="lab-status ${isCompleted ? 'completed' : ''}" 
                          id="status-${lab.id}"
@@ -248,9 +322,7 @@ class LabTracker {
                     <button class="btn btn-primary" id="details-${lab.id}">
                         📖 View Details
                     </button>
-                    <button class="btn btn-secondary" onclick="this.blur()">
-                        📚 AWS Docs
-                    </button>
+                    ${awsDocsBtn}
                 </div>
             </div>
         `;
