@@ -1,7 +1,8 @@
 ---
 Metadata:
   AWSToolsMetrics:
-    IaC_Generator: "arn:aws:cloudformation:us-east-1:183295455760:generatedTemplate/74d28cdb-6017-408e-9647-793927c8b2ab"
+    IaC_Generator: "arn:aws:cloudformation:${AWS::Region}:${AWS_ACCOUNT_ID}:generatedTemplate/${GENERATED_TEMPLATE_ID}"
+
 Resources:
   CloudFrontDistribution:
     UpdateReplacePolicy: "Retain"
@@ -11,53 +12,44 @@ Resources:
       DistributionConfig:
         Logging:
           IncludeCookies: false
-          Bucket: ""
+          Bucket: ""          # optional: ${LOG_BUCKET}.s3.amazonaws.com
           Prefix: ""
         Comment: ""
         DefaultRootObject: "index.html"
         Origins:
-        - ConnectionTimeout: 10
-          OriginAccessControlId:
-            Ref: "CloudFrontOriginAccessControl"
-          ConnectionAttempts: 3
-          OriginCustomHeaders: []
-          DomainName:
-            Fn::GetAtt:
-            - "S3BucketBrob314com"
-            - "RegionalDomainName"
-          OriginShield:
-            Enabled: false
-          S3OriginConfig:
-            OriginReadTimeout: 30
-            OriginAccessIdentity: ""
-          OriginPath: ""
-          Id: "brob314.com.s3.us-east-1.amazonaws.com-men921ukrp4"
+          - ConnectionTimeout: 10
+            OriginAccessControlId: !Ref CloudFrontOriginAccessControl
+            ConnectionAttempts: 3
+            OriginCustomHeaders: []
+            DomainName: !GetAtt [ S3BucketSite, RegionalDomainName ]
+            OriginShield:
+              Enabled: false
+            S3OriginConfig:
+              OriginReadTimeout: 30
+              OriginAccessIdentity: ""
+            OriginPath: ""
+            Id: "${ORIGIN_ID}"
         ViewerCertificate:
           MinimumProtocolVersion: "TLSv1.2_2021"
           SslSupportMethod: "sni-only"
           CloudFrontDefaultCertificate: false
-          AcmCertificateArn: "arn:aws:acm:us-east-1:183295455760:certificate/a80300f3-90d9-449c-b0b9-bde8ed266fe5"
+          AcmCertificateArn: "arn:aws:acm:${AWS::Region}:${AWS_ACCOUNT_ID}:certificate/${ACM_CERTIFICATE_ID}"
         PriceClass: "PriceClass_All"
         DefaultCacheBehavior:
           Compress: true
           FunctionAssociations: []
           LambdaFunctionAssociations: []
-          TargetOriginId: "brob314.com.s3.us-east-1.amazonaws.com-men921ukrp4"
+          TargetOriginId: "${ORIGIN_ID}"
           ViewerProtocolPolicy: "redirect-to-https"
           GrpcConfig:
             Enabled: false
           TrustedSigners: []
           FieldLevelEncryptionId: ""
           TrustedKeyGroups: []
-          AllowedMethods:
-          - "HEAD"
-          - "GET"
-          CachedMethods:
-          - "HEAD"
-          - "GET"
+          AllowedMethods: ["HEAD","GET"]
+          CachedMethods: ["HEAD","GET"]
           SmoothStreaming: false
-          CachePolicyId:
-            Ref: "CloudFrontCachePolicy"
+          CachePolicyId: !Ref CloudFrontCachePolicy
         Staging: false
         CustomErrorResponses: []
         ContinuousDeploymentPolicyId: ""
@@ -66,8 +58,8 @@ Resources:
           Items: []
         Enabled: true
         Aliases:
-        - "www.brob314.com"
-        - "brob314.com"
+          - "${PRIMARY_DOMAIN}"      # e.g., brob314.com
+          - "www.${PRIMARY_DOMAIN}"
         IPV6Enabled: true
         WebACLId: ""
         HttpVersion: "http2"
@@ -76,35 +68,36 @@ Resources:
             Locations: []
             RestrictionType: "none"
         CacheBehaviors: []
-  S3BucketPolicyBrob314com:
+
+  S3BucketPolicySite:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::S3::BucketPolicy"
     DeletionPolicy: "Retain"
     Properties:
-      Bucket:
-        Ref: "S3BucketBrob314com"
+      Bucket: !Ref S3BucketSite
       PolicyDocument:
         Version: "2008-10-17"
         Statement:
-        - Condition:
-            StringEquals:
-              AWS:SourceArn: "arn:aws:cloudfront::183295455760:distribution/E3E073C33QJ6XR"
-          Resource: "arn:aws:s3:::brob314.com/*"
-          Action: "s3:GetObject"
-          Effect: "Allow"
-          Principal:
-            Service: "cloudfront.amazonaws.com"
-          Sid: "AllowCloudFrontServicePrincipal"
-        Id: "PolicyForCloudFrontPrivateContent"
+          - Sid: "AllowCloudFrontServicePrincipal"
+            Id: "PolicyForCloudFrontPrivateContent"
+            Effect: "Allow"
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${SITE_BUCKET_NAME}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS_ACCOUNT_ID}:distribution/${CLOUDFRONT_DISTRIBUTION_ID}"
+
   Route53ResolverResolverRuleAssociation:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::Route53Resolver::ResolverRuleAssociation"
     DeletionPolicy: "Retain"
     Properties:
-      VPCId:
-        Ref: "EC2VPC"
+      VPCId: !Ref EC2VPC
       ResolverRuleId: "rslvr-autodefined-rr-internet-resolver"
       Name: "System Rule Association"
+
   CloudFrontOriginRequestPolicyEU:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -117,14 +110,15 @@ Resources:
         HeadersConfig:
           HeaderBehavior: "whitelist"
           Headers:
-          - "origin"
-          - "access-control-request-headers"
-          - "x-forwarded-for"
-          - "access-control-request-method"
-          - "user-agent"
+            - "origin"
+            - "access-control-request-headers"
+            - "x-forwarded-for"
+            - "access-control-request-method"
+            - "user-agent"
         CookiesConfig:
           CookieBehavior: "none"
         Name: "Managed-Elemental-MediaTailor-PersonalizedManifests"
+
   CloudFrontOriginRequestPolicyFw:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -136,12 +130,11 @@ Resources:
         Comment: "Policy to forward user-agent and referer headers to origin"
         HeadersConfig:
           HeaderBehavior: "whitelist"
-          Headers:
-          - "referer"
-          - "user-agent"
+          Headers: ["referer","user-agent"]
         CookiesConfig:
           CookieBehavior: "none"
         Name: "Managed-UserAgentRefererHeaders"
+
   CloudFrontOriginRequestPolicy:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -156,6 +149,7 @@ Resources:
         CookiesConfig:
           CookieBehavior: "all"
         Name: "Managed-AllViewer"
+
   CloudFrontCachePolicy:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::CachePolicy"
@@ -164,7 +158,7 @@ Resources:
       CachePolicyConfig:
         Comment: "Policy with caching enabled. Supports Gzip and Brotli compression."
         MinTTL: 1
-        MaxTTL: 3.1536E7
+        MaxTTL: 31536000
         ParametersInCacheKeyAndForwardedToOrigin:
           QueryStringsConfig:
             QueryStringBehavior: "none"
@@ -176,6 +170,7 @@ Resources:
           EnableAcceptEncodingGzip: true
         DefaultTTL: 86400
         Name: "Managed-CachingOptimized"
+
   Route53HostedZone:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::Route53::HostedZone"
@@ -184,7 +179,8 @@ Resources:
       VPCs: []
       HostedZoneConfig:
         Comment: "HostedZone created by Route53 Registrar"
-      Name: "brob314.com."
+      Name: !Sub "${PRIMARY_DOMAIN}."
+
   EC2VPC:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::EC2::VPC"
@@ -195,6 +191,7 @@ Resources:
       InstanceTenancy: "default"
       EnableDnsHostnames: true
       Tags: []
+
   CloudFrontOriginAccessControl:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginAccessControl"
@@ -205,7 +202,8 @@ Resources:
         Description: "Created by CloudFront"
         SigningProtocol: "sigv4"
         OriginAccessControlOriginType: "s3"
-        Name: "oac-brob314.com.s3.us-east-1.amazonaws.com-men980jyoek"
+        Name: !Sub "oac-${SITE_BUCKET_NAME}-${OAC_SUFFIX}"
+
   CloudFrontOriginRequestPolicyDI:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -218,12 +216,13 @@ Resources:
         HeadersConfig:
           HeaderBehavior: "whitelist"
           Headers:
-          - "origin"
-          - "access-control-request-headers"
-          - "access-control-request-method"
+            - "origin"
+            - "access-control-request-headers"
+            - "access-control-request-method"
         CookiesConfig:
           CookieBehavior: "none"
         Name: "Managed-CORS-S3Origin"
+
   CloudFrontOriginRequestPolicyKq:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -232,15 +231,14 @@ Resources:
       OriginRequestPolicyConfig:
         QueryStringsConfig:
           QueryStringBehavior: "all"
-        Comment: "Policy to forward all parameters in viewer requests except for the\
-          \ Host header"
+        Comment: "Policy to forward all parameters in viewer requests except for the Host header"
         HeadersConfig:
           HeaderBehavior: "allExcept"
-          Headers:
-          - "host"
+          Headers: ["host"]
         CookiesConfig:
           CookieBehavior: "all"
         Name: "Managed-AllViewerExceptHostHeader"
+
   CloudFrontOriginRequestPolicyBH:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -252,12 +250,12 @@ Resources:
         Comment: "Policy for custom origin with CORS"
         HeadersConfig:
           HeaderBehavior: "whitelist"
-          Headers:
-          - "origin"
+          Headers: ["origin"]
         CookiesConfig:
           CookieBehavior: "none"
         Name: "Managed-CORS-CustomOrigin"
-  S3BucketBrob314com:
+
+  S3BucketSite:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::S3::Bucket"
     DeletionPolicy: "Retain"
@@ -267,15 +265,16 @@ Resources:
         IgnorePublicAcls: true
         BlockPublicPolicy: true
         BlockPublicAcls: true
-      BucketName: "brob314.com"
+      BucketName: "${SITE_BUCKET_NAME}"     # e.g., brob314.com
       OwnershipControls:
         Rules:
-        - ObjectOwnership: "BucketOwnerEnforced"
+          - ObjectOwnership: "BucketOwnerEnforced"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
-        - BucketKeyEnabled: true
-          ServerSideEncryptionByDefault:
-            SSEAlgorithm: "AES256"
+          - BucketKeyEnabled: true
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+
   CloudFrontOriginRequestPolicyHP:
     UpdateReplacePolicy: "Retain"
     Type: "AWS::CloudFront::OriginRequestPolicy"
@@ -284,32 +283,31 @@ Resources:
       OriginRequestPolicyConfig:
         QueryStringsConfig:
           QueryStringBehavior: "all"
-        Comment: "Policy to forward all parameters in viewer requests and all CloudFront\
-          \ headers as of June 2022"
+        Comment: "Policy to forward all parameters in viewer requests and all CloudFront headers as of June 2022"
         HeadersConfig:
           HeaderBehavior: "allViewerAndWhitelistCloudFront"
           Headers:
-          - "CloudFront-Viewer-Time-Zone"
-          - "CloudFront-Viewer-Address"
-          - "CloudFront-Viewer-Country"
-          - "CloudFront-Is-IOS-Viewer"
-          - "CloudFront-Is-Tablet-Viewer"
-          - "CloudFront-Forwarded-Proto"
-          - "CloudFront-Viewer-Country-Name"
-          - "CloudFront-Is-Mobile-Viewer"
-          - "CloudFront-Is-SmartTV-Viewer"
-          - "CloudFront-Viewer-Country-Region"
-          - "CloudFront-Is-Android-Viewer"
-          - "CloudFront-Viewer-Country-Region-Name"
-          - "CloudFront-Viewer-City"
-          - "CloudFront-Viewer-Latitude"
-          - "CloudFront-Viewer-Longitude"
-          - "CloudFront-Viewer-Http-Version"
-          - "CloudFront-Viewer-Postal-Code"
-          - "CloudFront-Viewer-ASN"
-          - "CloudFront-Is-Desktop-Viewer"
-          - "CloudFront-Viewer-Metro-Code"
-          - "CloudFront-Viewer-TLS"
+            - "CloudFront-Viewer-Time-Zone"
+            - "CloudFront-Viewer-Address"
+            - "CloudFront-Viewer-Country"
+            - "CloudFront-Is-IOS-Viewer"
+            - "CloudFront-Is-Tablet-Viewer"
+            - "CloudFront-Forwarded-Proto"
+            - "CloudFront-Viewer-Country-Name"
+            - "CloudFront-Is-Mobile-Viewer"
+            - "CloudFront-Is-SmartTV-Viewer"
+            - "CloudFront-Viewer-Country-Region"
+            - "CloudFront-Is-Android-Viewer"
+            - "CloudFront-Viewer-Country-Region-Name"
+            - "CloudFront-Viewer-City"
+            - "CloudFront-Viewer-Latitude"
+            - "CloudFront-Viewer-Longitude"
+            - "CloudFront-Viewer-Http-Version"
+            - "CloudFront-Viewer-Postal-Code"
+            - "CloudFront-Viewer-ASN"
+            - "CloudFront-Is-Desktop-Viewer"
+            - "CloudFront-Viewer-Metro-Code"
+            - "CloudFront-Viewer-TLS"
         CookiesConfig:
           CookieBehavior: "all"
         Name: "Managed-AllViewerAndCloudFrontHeaders-2022-06"
