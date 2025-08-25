@@ -177,50 +177,6 @@ The website automatically saves your theme preference:
    ```
 3. **Dark Theme**: Update `.dark` class variables for dark mode colors
 
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-### Getting Started
-
-1. **Fork the repository**
-2. **Create a feature branch**:
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Make your changes**
-4. **Test thoroughly**:
-   - Test in multiple browsers
-   - Verify print functionality
-   - Check responsive design
-   - Validate HTML/CSS
-
-### Code Style
-
-- Use semantic HTML5 elements
-- Follow CSS BEM methodology where applicable
-- Keep JavaScript vanilla (no frameworks)
-- Maintain accessibility standards
-- Use consistent indentation (2 spaces)
-
-### Submitting Changes
-
-1. **Commit your changes**:
-   ```bash
-   git commit -m "Add amazing feature"
-   ```
-2. **Push to your branch**:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-3. **Open a Pull Request**
-
-### Issues
-
-- Use GitHub Issues for bug reports and feature requests
-- Provide detailed reproduction steps for bugs
-- Include browser/OS information when relevant
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
