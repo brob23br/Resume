@@ -17,10 +17,7 @@ A minimalist, print-friendly resume website built with vanilla HTML, CSS, and Ja
 - [Quick Start](#quick-start)
 - [Local Development](#local-development)
 - [AWS Deployment](#aws-deployment)
-- [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
-- [Acknowledgements](#acknowledgements)
 
 ## Features
 
@@ -144,8 +141,6 @@ The template creates:
 - **Origin Access Control**: Secure S3 access
 - **Route53 Records**: DNS configuration (if using custom domain)
 - **Cache Policies**: Optimized caching behavior
-
-## Usage
 
 ### Theme Toggle
 
