@@ -248,15 +248,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
-## Acknowledgements
-
-- **Design Inspiration**: Modern minimalist resume layouts
-- **CSS Grid**: For responsive layout without frameworks
-- **AWS CloudFormation**: For infrastructure as code deployment
-- **Inter Font**: Clean, professional typography
-- **CSS Custom Properties**: For maintainable theming system
-
----
-
-**Built with ❤️ using vanilla web technologies**
